@@ -14,9 +14,9 @@ if 'ENV' in os.environ and os.environ['ENV'] == 'dev':
     exp_path = os.path.join(current_path, 'datasets', 'dataset_2.csv')
     pop_path = os.path.join(current_path, 'datasets', 'dataset_4.csv')
 else:
-    base_url = 'http://s3.amazonaws.com/uai-datathon-datasets/datasets/'
-    exp_path = base_url + 'dataset_2.csv'
-    pop_path = base_url + 'dataset_4.csv'
+    base_url = 'http://uai-datathon-datasets.s3-accelerate.amazonaws.com/'
+    exp_path = base_url + 'datasets/dataset_2.csv'
+    pop_path = base_url + 'datasets/dataset_4.csv'
 
 # Get dataset 2, rename last column, group by category and year
 
