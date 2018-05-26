@@ -2,6 +2,7 @@
 
 import dash
 import os
+import psutil
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
@@ -54,13 +55,17 @@ CATEGORIES = df_gastos['Partida'].unique()
 
 # dataset 4
 
-df_pop = pd.read_csv(pop_path, sep=';')
-cols = df_pop.columns.values
-cols[0] = 'year'
-df_pop.columns = cols
+# df_pop = pd.read_csv(pop_path, sep=';')
+# cols = df_pop.columns.values
+# cols[0] = 'year'
+# df_pop.columns = cols
 
-BAR_TYPES = ['poblacionhombres', 'poblacionmujeres']
-BAR_NAMES = ['Población Hombres', 'Población Mujeres']
+# BAR_TYPES = ['poblacionhombres', 'poblacionmujeres']
+# BAR_NAMES = ['Población Hombres', 'Población Mujeres']
+
+# print(df_month.memory_usage(index=True).sum())
+# print(df_gastos.memory_usage(index=True).sum())
+# print(df_pop.memory_usage(index=True).sum())
 
 # Initialize Dash app
 
@@ -71,6 +76,10 @@ app.css.config.serve_locally = True
 # app.css.append_css({
 #     "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 # })
+
+process = psutil.Process(os.getpid())
+print(os.getpid())
+print(process.memory_info().rss)
 
 app.layout = html.Div(children=[
     html.Link(
@@ -107,34 +116,6 @@ app.layout = html.Div(children=[
 
     dcc.Graph(
         id='expenditure-by-month'
-    ),
-
-    dcc.Dropdown(
-        id='categories',
-        options=[{
-            'label': i, 'value': i
-        } for i in df_gastos['Partida'].unique()],
-        multi=True
-    ),
-
-    dcc.Graph(
-        id='expenditure-by-section'
-    ),
-
-    dcc.Graph(
-        id='pop-by-year',
-        figure={
-            'data': [
-                go.Bar(
-                    x=df_pop['year'],
-                    y=df_pop[cat],
-                    name=name
-                ) for (cat, name) in zip(BAR_TYPES, BAR_NAMES)
-            ],
-            'layout': go.Layout(
-                barmode='stack'
-            )
-        }
     )
 ])
 
@@ -205,29 +186,6 @@ def updateExpByMonthChartTitle(clickData, category):
     year = clickData['points'][0]['x']
 
     return str(category) + ' - ' + str(year)
-
-
-@app.callback(
-    Output('expenditure-by-section', 'figure'),
-    [Input('categories', 'value')]
-)
-def updateLineChart(categories):
-    if categories is None or categories == []:
-        categories = CATEGORIES
-
-    sub_df = df_gastos[(df_gastos['Partida'].isin(categories))]
-
-    traces = []
-
-    for cat in categories:
-        trace = go.Scatter(
-                    x=sub_df[sub_df.Partida == cat].Periodo,
-                    y=sub_df[sub_df.Partida == cat].Gastos,
-                    name=cat
-                )
-        traces.append(trace)
-
-    return {'data': traces}
 
 if __name__ == '__main__':
     app.run_server(debug=True)
