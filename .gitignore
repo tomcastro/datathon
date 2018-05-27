@@ -103,7 +103,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-kickstarter-cleaned.csv
+# kickstarter-cleaned.csv
 datasets/
 
 # Elastic Beanstalk Files
