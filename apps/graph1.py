@@ -30,7 +30,9 @@ else:
 sorter = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
-df_month = pd.read_csv(month_path, sep=';', dtype={'Periodo': int, 'Monto_sum': int}, low_memory=False)
+df_month = pd.read_csv(month_path, sep=';',
+                       dtype={'Periodo': int, 'Monto_sum': int},
+                       low_memory=False, encoding='utf-8')
 df_gb = df_month.groupby(['Nombre Partida', 'Periodo', 'Mes'])['Monto_sum'] \
         .sum()
 df_month = df_gb.reset_index()
@@ -41,9 +43,20 @@ df_month = df_month.sort_values(['Nombre Partida', 'Periodo', 'Mes'])
 
 df_month['Nombre Partida'] = df_month['Nombre Partida'].str.upper()
 
+df_month['Nombre Partida'] = df_month['Nombre Partida'] \
+                               .str.replace('Ó', 'O')
+df_month['Nombre Partida'] = df_month['Nombre Partida'] \
+                               .str.replace('Á', 'A')
+df_month['Nombre Partida'] = df_month['Nombre Partida'] \
+                               .str.replace('É', 'E')
+df_month['Nombre Partida'] = df_month['Nombre Partida'] \
+                               .str.replace('Í', 'I')
+df_month['Nombre Partida'] = df_month['Nombre Partida'] \
+                               .str.replace('Ú', 'U')
+
 # Get dataset 2, rename last column, group by category and year
 
-df_gastos = pd.read_csv(exp_path, sep=';')
+df_gastos = pd.read_csv(exp_path, sep=';', encoding='utf-8')
 cols = df_gastos.columns.values
 cols[-1] = 'Gastos'
 cols[-2] = 'Presupuesto'
@@ -54,11 +67,36 @@ df_gb = df_gastos.groupby(['Partida', 'Periodo'])['Gastos', 'Presupuesto'] \
 
 df_gastos = df_gb.reset_index()
 
+df_gastos['Partida'] = df_gastos['Partida'].str.upper()
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Ó', 'O')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Á', 'A')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('É', 'E')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Í', 'I')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Ú', 'U')
+
+# fix accent errors
+df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ê', 'I')
+df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ƒ', 'E')
+
+print(df_gastos['Partida'].unique())
+
 CATEGORIES = df_gastos['Partida'].unique()
 YEARS_INT = df_gastos['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
-COLORS = ['rgb(196, 208, 54)', 'rgb(151, 96, 42)', 'rgb(247, 49, 72)', 'rgb(32, 73, 157)', 'rgb(182, 230, 4)', 'rgb(151, 252, 1)', 'rgb(95, 45, 167)', 'rgb(60, 163, 219)', 'rgb(106, 13, 153)', 'rgb(121, 49, 241)', 'rgb(95, 47, 94)', 'rgb(223, 38, 81)', 'rgb(175, 112, 226)', 'rgb(242, 23, 99)', 'rgb(180, 195, 172)', 'rgb(206, 153, 212)', 'rgb(138, 181, 107)', 'rgb(116, 203, 176)', 'rgb(88, 139, 147)', 'rgb(154, 134, 48)',
+colors = ['rgb(165, 45, 22)', 'rgb(196, 208, 54)', 'rgb(151, 96, 42)', 'rgb(247, 49, 72)', 'rgb(32, 73, 157)', 'rgb(182, 230, 4)', 'rgb(151, 252, 1)', 'rgb(95, 45, 167)', 'rgb(60, 163, 219)', 'rgb(106, 13, 153)', 'rgb(121, 49, 241)', 'rgb(95, 47, 94)', 'rgb(223, 38, 81)', 'rgb(175, 112, 226)', 'rgb(242, 23, 99)', 'rgb(180, 195, 172)', 'rgb(206, 153, 212)', 'rgb(138, 181, 107)', 'rgb(116, 203, 176)', 'rgb(88, 139, 147)', 'rgb(154, 134, 48)',
 'rgb(125, 15, 36)', 'rgb(134, 151, 199)', 'rgb(23, 226, 253)', 'rgb(80, 12, 213)', 'rgb(53, 67, 175)', 'rgb(239, 5, 194)', 'rgb(155, 248, 228)', 'rgb(92, 132, 238)']
+r.shuffle(colors)
+
+colors_assigned = {}
+for category in df_month['Nombre Partida'].unique():
+    colors_assigned[category] = colors.pop()
+
+print(colors_assigned)
 
 layout = html.Div(className='container', children=[
 
@@ -125,6 +163,10 @@ def updateBubbleChart(year):
     sub_df = df_gastos[(df_gastos['Periodo'] == year)]
     sub_df = sub_df.reset_index(drop=True)
 
+    bubble_colors = []
+    for i, row in sub_df.iterrows():
+        bubble_colors.append(colors_assigned[row['Partida']])
+
     size = [(row['Gastos'] * row['Presupuesto'] / 1000000000)
             for i, row in sub_df.iterrows()]
 
@@ -144,7 +186,7 @@ def updateBubbleChart(year):
         mode='markers',
         marker=dict(
             size=scaled_size,
-            color=COLORS,
+            color=bubble_colors,
             sizemode='diameter',
             sizemin=5
         )
