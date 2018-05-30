@@ -83,8 +83,6 @@ df_gastos['Partida'] = df_gastos['Partida'] \
 df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ê', 'I')
 df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ƒ', 'E')
 
-print(df_gastos['Partida'].unique())
-
 CATEGORIES = df_gastos['Partida'].unique()
 YEARS_INT = df_gastos['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
@@ -95,8 +93,6 @@ r.shuffle(colors)
 colors_assigned = {}
 for category in df_month['Nombre Partida'].unique():
     colors_assigned[category] = colors.pop()
-
-print(colors_assigned)
 
 layout = html.Div(className='container', children=[
 
@@ -171,8 +167,10 @@ def updateBubbleChart(year):
             for i, row in sub_df.iterrows()]
 
     l, u = 0.05, 1
-    scaled_size = normalize(size,
-        {'actual': {'lower': min(size), 'upper': max(size)}, 'desired': {'lower': l, 'upper': u}}
+    scaled_size = normalize(
+        size,
+        {'actual': {'lower': min(size), 'upper': max(size)},
+         'desired': {'lower': l, 'upper': u}}
     )
     scaled_size = [round(x*150) for x in scaled_size]
 
