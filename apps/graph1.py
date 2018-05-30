@@ -57,8 +57,14 @@ df_gastos = df_gb.reset_index()
 CATEGORIES = df_gastos['Partida'].unique()
 YEARS_INT = df_gastos['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
+COLORS = ['rgb(196, 208, 54)', 'rgb(151, 96, 42)', 'rgb(247, 49, 72)', 'rgb(32, 73, 157)', 'rgb(182, 230, 4)', 'rgb(151, 252, 1)', 'rgb(95, 45, 167)', 'rgb(60, 163, 219)', 'rgb(106, 13, 153)', 'rgb(121, 49, 241)', 'rgb(95, 47, 94)', 'rgb(223, 38, 81)', 'rgb(175, 112, 226)', 'rgb(242, 23, 99)', 'rgb(180, 195, 172)', 'rgb(206, 153, 212)', 'rgb(138, 181, 107)', 'rgb(116, 203, 176)', 'rgb(88, 139, 147)', 'rgb(154, 134, 48)',
+'rgb(125, 15, 36)', 'rgb(134, 151, 199)', 'rgb(23, 226, 253)', 'rgb(80, 12, 213)', 'rgb(53, 67, 175)', 'rgb(239, 5, 194)', 'rgb(155, 248, 228)', 'rgb(92, 132, 238)']
 
 layout = html.Div(className='container', children=[
+
+    dcc.Graph(
+        id='bubble-budget-by-exp'
+    ),
 
     dcc.Slider(
         id='year-slider',
@@ -70,10 +76,6 @@ layout = html.Div(className='container', children=[
     ),
 
     html.Div(className='graph', children=[
-        dcc.Graph(
-            id='bubble-budget-by-exp'
-        ),
-
         dcc.Graph(
             id='exp-by-month'
         )
@@ -126,12 +128,6 @@ def updateBubbleChart(year):
     size = [(row['Gastos'] * row['Presupuesto'] / 1000000000)
             for i, row in sub_df.iterrows()]
 
-    # scaled_size = [(x-min(size))/(max(size)-min(size))*100 for x in size]
-    # print(scaled_size)
-
-    colors = ['rgb({}, {}, {})'.format(r.randint(0, 256), r.randint(0, 256), r.randint(0, 256))
-              for i, row in sub_df.iterrows()]
-
     l, u = 0.05, 1
     scaled_size = normalize(size,
         {'actual': {'lower': min(size), 'upper': max(size)}, 'desired': {'lower': l, 'upper': u}}
@@ -148,7 +144,7 @@ def updateBubbleChart(year):
         mode='markers',
         marker=dict(
             size=scaled_size,
-            color=colors,
+            color=COLORS,
             sizemode='diameter',
             sizemin=5
         )
