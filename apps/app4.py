@@ -37,6 +37,7 @@ df_gastos = df_gastos.sort_values(by=['Periodo'])
 # Dataset 5
 
 df_pib = pd.read_csv(pib_path, sep=';')
+print(df_pib.head())
 cols = df_pib.columns.values
 cols[0] = 'Periodo'
 cols[1] = 'PIB'
