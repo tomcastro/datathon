@@ -4,7 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from app import app, server
-from apps import app1, app2, app3, app4
+from apps import graph1, app2, app3, app4
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -21,7 +21,7 @@ app.layout = html.Div([
                 html.Ul(
                     className='nav navbar-nav',
                     children=[
-                        html.Li(className='active', children=html.A('Cruce 1', href='/app1')),
+                        html.Li(className='active', children=html.A('Cruce 1', href='/graph1')),
                         html.Li(children=html.A('Cruce 2', href='/app2')),
                         html.Li(children=html.A('Cruce 3', href='/app3')),
                         html.Li(children=html.A('Cruce 4', href='/app4')),
@@ -38,8 +38,8 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/app1':
-        return app1.layout
+    if pathname == '/graph1':
+        return graph1.layout
     elif pathname == '/app2':
         return app2.layout
     elif pathname == '/app3':
@@ -51,4 +51,4 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0')
+    app.run_server(debug=True)
