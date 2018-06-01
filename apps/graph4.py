@@ -12,19 +12,13 @@ from app import app
 
 # Get CSV files depending on environment
 
-if 'ENV' in os.environ and os.environ['ENV'] == 'dev':
-    current_path = os.getcwd()
-    month_path = os.path.join(current_path, 'datasets', 'dataset_1.csv')
-    exp_path = os.path.join(current_path, 'datasets', 'dataset_2.csv')
-    pop_path = os.path.join(current_path, 'datasets', 'dataset_4.csv')
-    pib_path = os.path.join(current_path, 'datasets', 'dataset_5.csv')
-    imm_path = os.path.join(current_path, 'datasets',
-                            'immigration_data', 'visas.csv')
-else:
-    base_url = 'http://uai-datathon-datasets.s3-accelerate.amazonaws.com/'
-    month_path = base_url + 'datasets/dataset_1.csv'
-    exp_path = base_url + 'datasets/dataset_2.csv'
-    pop_path = base_url + 'datasets/dataset_4.csv'
+current_path = os.getcwd()
+month_path = os.path.join(current_path, 'datasets', 'dataset_1.csv')
+exp_path = os.path.join(current_path, 'datasets', 'dataset_2.csv')
+pop_path = os.path.join(current_path, 'datasets', 'dataset_4.csv')
+pib_path = os.path.join(current_path, 'datasets', 'dataset_5.csv')
+imm_path = os.path.join(current_path, 'datasets',
+                        'immigration_data', 'visas.csv')
 
 # Get dataset 5
 
