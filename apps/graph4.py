@@ -14,7 +14,6 @@ from app import app
 
 current_path = os.getcwd()
 month_path = os.path.join(current_path, 'datasets', 'dataset_1.csv')
-exp_path = os.path.join(current_path, 'datasets', 'dataset_2.csv')
 pop_path = os.path.join(current_path, 'datasets', 'dataset_4.csv')
 pib_path = os.path.join(current_path, 'datasets', 'dataset_5.csv')
 imm_path = os.path.join(current_path, 'datasets',

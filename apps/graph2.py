@@ -13,22 +13,37 @@ from app import app
 # Get CSV files depending on environment
 
 current_path = os.getcwd()
-inc_path = os.path.join(current_path, 'datasets', 'dataset_3.csv')
+exp_path = os.path.join(current_path, 'datasets', 'dataset_2.csv')
 pib_path = os.path.join(current_path, 'datasets', 'dataset_5.csv')
 
-# Get dataset 3
+# Get dataset 2, rename last column, group by category and year
 
-df_inc = pd.read_csv(inc_path, sep=';', encoding='latin1')
-df_inc = df_inc[
-    (df_inc['NIVEL1'] == 'TRANSACCIONES QUE AFECTAN EL PATRIMONIO NETO')
-]
-df_inc['Real_amount'] = df_inc['Real_amount'].str.replace(',', '.')
-df_inc['Real_amount'] = df_inc['Real_amount'].apply(pd.to_numeric)
-df_exp = df_inc[(df_inc['NIVEL2'] == 'GASTOS')].reset_index(drop=True)
-df_exp = df_exp.sort_values(['Periodo', 'NIVEL1', 'NIVEL2', 'NIVEL3'])
-df_inc = df_inc[(df_inc['NIVEL2'] == 'INGRESOS')].reset_index(drop=True)
-df_inc = df_inc.sort_values(['Periodo', 'NIVEL1', 'NIVEL2', 'NIVEL3'])
-# print(df_inc)
+df_gastos = pd.read_csv(exp_path, sep=';', encoding='utf-8')
+cols = df_gastos.columns.values
+cols[-1] = 'Gastos'
+cols[-2] = 'Presupuesto'
+df_gastos.columns = cols
+
+df_gb = df_gastos.groupby(['Partida', 'Periodo'])['Gastos', 'Presupuesto'] \
+                 .sum()
+
+df_gastos = df_gb.reset_index()
+
+df_gastos['Partida'] = df_gastos['Partida'].str.upper()
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Ó', 'O')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Á', 'A')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('É', 'E')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Í', 'I')
+df_gastos['Partida'] = df_gastos['Partida'] \
+                        .str.replace('Ú', 'U')
+
+# fix accent errors
+df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ê', 'I')
+df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ƒ', 'E')
 
 # Get dataset 5
 
@@ -38,24 +53,24 @@ cols[0] = 'Periodo'
 cols[1] = 'PIB'
 df_pib.columns = cols
 df_pib = df_pib.reset_index(drop=True)
-# df_pib['PIB'] = df_pib['PIB'].apply(lambda x: x*1000)
+df_pib = df_pib[(df_pib['Periodo']) >= 2009].sort_values(['Periodo'])
 
 YEARS_INT = df_pib['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
 
 layout = html.Div(className='container', children=[
 
-    html.H2(children='Ingreso y gasto vs. PIB', style={
+    html.H2(children='Presupuesto y gasto vs. PIB', style={
         'textAlign': 'center',
     }),
 
     dcc.Graph(
-        id='pie-charts',
+        id='pie-charts-2',
         animate=True
     ),
 
     dcc.Slider(
-        id='year-slider',
+        id='year-slider-2',
         included=False,
         min=min(YEARS_INT),
         max=max(YEARS_INT),
@@ -64,20 +79,20 @@ layout = html.Div(className='container', children=[
     ),
 
     html.Div(className='graph', children=[
-        html.H2(id='subtitle', style={'textAlign': 'center'}),
+        html.H2(id='subtitle-2', style={'textAlign': 'center'}),
 
         dcc.Graph(
-            id='treemap'
+            id='treemap-2'
         )
     ])
 ])
 
 
 @app.callback(
-    Output('subtitle', 'children'),
+    Output('subtitle-2', 'children'),
     [
-        Input('pie-charts', 'clickData'),
-        Input('year-slider', 'value')
+        Input('pie-charts-2', 'clickData'),
+        Input('year-slider-2', 'value')
     ]
 )
 def updateSubtitle(clickData, year):
@@ -89,7 +104,7 @@ def updateSubtitle(clickData, year):
     string = 'Porcentaje de '
 
     if clickedGraph == 0:
-        string += 'Ingresos'
+        string += 'Presupuesto'
     elif clickedGraph == 1:
         string += 'Gastos'
 
@@ -99,10 +114,10 @@ def updateSubtitle(clickData, year):
 
 
 @app.callback(
-    Output('treemap', 'figure'),
+    Output('treemap-2', 'figure'),
     [
-        Input('pie-charts', 'clickData'),
-        Input('year-slider', 'value')
+        Input('pie-charts-2', 'clickData'),
+        Input('year-slider-2', 'value')
     ]
 )
 def updateTreemap(clickData, year):
@@ -112,21 +127,19 @@ def updateTreemap(clickData, year):
         clickedGraph = 0
 
     if clickedGraph == 0:
-        sub_df = df_inc[(df_inc['Periodo']) == year]
-        sub_df_gb = sub_df.groupby(['Periodo', 'NIVEL3'])['Real_amount'].sum()
-        sub_df = sub_df_gb.reset_index()
+        sub_df = df_gastos[(df_gastos['Periodo']) == year]
+        cat = 'Presupuesto'
     elif clickedGraph == 1:
-        sub_df = df_exp[(df_exp['Periodo']) == year]
-        sub_df_gb = sub_df.groupby(['Periodo', 'NIVEL3'])['Real_amount'].sum()
-        sub_df = sub_df_gb.reset_index()
+        sub_df = df_gastos[(df_gastos['Periodo']) == year]
+        cat = 'Gastos'
 
-    total = sub_df.groupby(['Periodo'], as_index=False)['Real_amount'].sum()
-    total = total.iloc[0]['Real_amount']
+    total = sub_df.groupby(['Periodo'], as_index=False)[cat].sum()
+    total = total.iloc[0][cat]
 
     x, y = 0., 0.
     width, height = 200., 100.
 
-    normed = sq.normalize_sizes(sub_df['Real_amount'], width, height)
+    normed = sq.normalize_sizes(sub_df[cat], width, height)
     rects = sq.squarify(normed, x, y, width, height)
 
     color_brewer = ['rgb(166,206,227)', 'rgb(31,120,180)', 'rgb(178,223,138)',
@@ -152,7 +165,7 @@ def updateTreemap(clickData, year):
         if r['dx'] < 20 or r['dy'] < 20:
             text = ''
         else:
-            text = sub_df.iloc[df_counter]['NIVEL3'].replace(' ', '<br>')
+            text = sub_df.iloc[df_counter]['Partida'].replace(' ', '<br>')
 
         annotations.append(dict(
             x=r['x']+(r['dx']/2),
@@ -171,8 +184,8 @@ def updateTreemap(clickData, year):
         x=[r['x']+(r['dx']/2) for r in rects],
         y=[r['y']+(r['dy']/2) for r in rects],
         text=[
-            str(row['NIVEL3']) + '<br>' +
-            str(round(row['Real_amount'] / total * 100, 2)) +
+            str(row['Partida']) + '<br>' +
+            str(round(row[cat] / total * 100, 2)) +
             '%' for (i, row) in sub_df.iterrows()
         ],
         customdata=[],
@@ -195,30 +208,30 @@ def updateTreemap(clickData, year):
 
 
 @app.callback(
-    Output('pie-charts', 'figure'),
-    [Input('year-slider', 'value')]
+    Output('pie-charts-2', 'figure'),
+    [Input('year-slider-2', 'value')]
 )
 def updatePieCharts(year):
     pib = df_pib[(df_pib['Periodo'] == year)].iloc[0]['PIB']
-    perc_inc = df_inc[
-        (df_inc['Periodo'] == year)
-    ].iloc[0]['Real_amount'] * 100 / pib
-    perc_exp = df_exp[
-        (df_exp['Periodo'] == year)
-    ].iloc[0]['Real_amount'] * 100 / pib
+    perc_bud = df_gastos[
+        (df_gastos['Periodo'] == year)
+    ].iloc[0]['Presupuesto'] * 100 / pib
+    perc_exp = df_gastos[
+        (df_gastos['Periodo'] == year)
+    ].iloc[0]['Gastos'] * 100 / pib
 
-    perc_pib_inc = 100 - perc_inc
+    perc_pib_bud = 100 - perc_bud
     perc_pib_exp = 100 - perc_exp
 
     traces = []
 
     traces.append(go.Pie(
-        labels=['PIB', 'Ingresos'],
-        values=[perc_pib_inc, perc_inc],
+        labels=['PIB', 'Presupuesto'],
+        values=[perc_pib_bud, perc_bud],
         hoverinfo='label+percent',
         textinfo='label',
         domain={'x': [0, 0.48]},
-        name='Ingresos',
+        name='Presupuesto',
         hole=0.4,
     ))
 
