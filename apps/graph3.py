@@ -6,6 +6,7 @@ import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
 import random as r
+import squarify as sq
 from dash.dependencies import Input, Output
 
 from app import app
@@ -40,7 +41,7 @@ cols[0] = 'Periodo'
 cols[1] = 'PIB'
 df_pib.columns = cols
 df_pib = df_pib.reset_index(drop=True)
-df_pib['PIB'] = df_pib['PIB'].apply(lambda x: x*1000)
+# df_pib['PIB'] = df_pib['PIB'].apply(lambda x: x*1000)
 
 YEARS_INT = df_pib['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
@@ -63,7 +64,43 @@ layout = html.Div(className='container', children=[
         marks={j: i for (i, j) in zip(YEARS_INT, YEARS_STR)},
         value=min(YEARS_INT)
     ),
+
+    html.Div(className='graph', children=[
+        dcc.Graph(
+            id='treemap'
+        )
+    ])
 ])
+
+
+@app.callback(
+    Output('treemap', 'figure'),
+    [
+        Input('pie-charts', 'clickData'),
+        Input('year-slider', 'value')
+    ]
+)
+def updateTreemap(clickData, year):
+    if clickData is None:
+        return go.Figure(data=[])
+
+    clickedGraph = clickData['points'][0]['curveNumber']
+
+    if clickedGraph == 0:
+        sub_df = df_inc[(df_inc['Periodo']) == year]
+    elif clickedGraph == 1:
+        sub_df = df_exp[(df_exp['Periodo']) == year]
+
+    total = sub_df.groupby(['Periodo'], as_index=False)['Real_amount'].sum()
+    total = total[0]['Real_amount']
+
+    x, y = 0., 0.
+    width, height = 100., 100.
+
+    normed = sq.normalize_sizes(values, width, height)
+    rects = sq.squarify(normed, x, y, width, height)
+
+    return go.Figure(data=[])
 
 
 @app.callback(

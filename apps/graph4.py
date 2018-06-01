@@ -61,7 +61,7 @@ def normalize(values, bounds):
 size = []
 
 for i, row in df_pib.iterrows():
-    size.append(df_pop.iloc[i]['poblaciontotal'] / row['PIB'])
+    size.append(row['PIB'] / df_pop.iloc[i]['poblaciontotal'])
 
 l, u = 0.3, 1
 scaled_size = normalize(
