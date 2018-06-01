@@ -97,7 +97,8 @@ for category in df_month['Nombre Partida'].unique():
 layout = html.Div(className='container', children=[
 
     dcc.Graph(
-        id='bubble-budget-by-exp'
+        id='bubble-budget-by-exp',
+        animate=True
     ),
 
     dcc.Slider(
@@ -111,7 +112,8 @@ layout = html.Div(className='container', children=[
 
     html.Div(className='graph', children=[
         dcc.Graph(
-            id='exp-by-month'
+            id='exp-by-month',
+            animate=True
         )
     ])
 ])
@@ -133,6 +135,9 @@ def normalize(values, bounds):
     ]
 )
 def updateExpChart(clickData, year):
+    if clickData is None:
+        return go.Figure(data=[])
+
     category = clickData['points'][0]['text'].upper()
     sub_df = df_month[(df_month['Periodo'] == year)]
     sub_df = sub_df[(sub_df['Nombre Partida'] == category)]
