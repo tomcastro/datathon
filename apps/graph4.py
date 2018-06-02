@@ -71,6 +71,15 @@ scaled_colors = [round(x) for x in scaled_colors]
 
 traces = []
 
+minim = df_imm.loc[df_imm['counts'].idxmin()]['counts']
+maxim = df_imm.loc[df_imm['counts'].idxmax()]['counts']
+minim = int(round(minim / 1000) * 1000)
+maxim = int(round(maxim / 1000) * 1000)
+mp = int(round((minim + maxim) / 2))
+
+print(minim)
+print(maxim)
+
 traces.append(go.Scatter(
     x=df_pib['PIB'],
     y=df_pop['poblaciontotal'],
@@ -83,11 +92,11 @@ traces.append(go.Scatter(
         sizemode='diameter',
         showscale=True,
         colorbar=dict(
-            title='Nivel de inmigración',
+            title='Número de inmigrantes',
             titleside='top',
             tickmode='array',
             tickvals=[105, 180, 250],
-            ticktext=['Baja', 'Intermedia', 'Alta'],
+            ticktext=[str(minim), str(mp), str(maxim)],
             ticks='outside'
         )
     )
