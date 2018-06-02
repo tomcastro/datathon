@@ -4,32 +4,23 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from app import app, server
-from apps import graph1, graph2, graph3, graph4
+from apps import index, graph1, graph2, graph3, graph4
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
 
-    html.Div(
-        className='navbar navbar-default',
-        children=html.Div(
-            className='container-fluid',
-            children=[
-                html.Div(
-                    className='navbar-header',
-                    children=html.A('UAI Datathon', className='navbar-brand', href='/')
-                ),
-                html.Ul(
-                    className='nav navbar-nav',
-                    children=[
-                        html.Li(className='active', children=html.A('Cruce 1', href='/graph1')),
-                        html.Li(children=html.A('Cruce 2', href='/graph2')),
-                        html.Li(children=html.A('Cruce 3', href='/graph3')),
-                        html.Li(children=html.A('Cruce 4', href='/graph4')),
-                    ]
-                )
-            ]
+    html.Div(children=[html.Div(
+        html.Ul(
+            className='custom-nav',
+                children=[
+                    html.Li(className='active', children=html.A('Cruce 1', href='/graph1')),
+                    html.Li(children=html.A('Cruce 2', href='/graph2')),
+                    html.Li(children=html.A('Cruce 3', href='/graph3')),
+                    html.Li(children=html.A('Cruce 4', href='/graph4')),
+                ]
+            )
         )
-    ),
+    ]),
 
     html.Div(id='page-content')
 ])
@@ -46,6 +37,8 @@ def display_page(pathname):
         return graph3.layout
     elif pathname == '/graph4':
         return graph4.layout
+    elif pathname == '/':
+        return index.layout
     else:
         return '404'
 

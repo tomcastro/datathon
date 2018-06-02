@@ -7,8 +7,6 @@ import plotly.graph_objs as go
 import pandas as pd
 from dash.dependencies import Input, Output
 
-from app import app
-
 # Get CSV files depending on environment
 
 if 'ENV' in os.environ and os.environ['ENV'] == 'dev':

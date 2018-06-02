@@ -77,9 +77,6 @@ minim = int(round(minim / 1000) * 1000)
 maxim = int(round(maxim / 1000) * 1000)
 mp = int(round((minim + maxim) / 2))
 
-print(minim)
-print(maxim)
-
 traces.append(go.Scatter(
     x=df_pib['PIB'],
     y=df_pop['poblaciontotal'],
