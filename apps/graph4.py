@@ -5,10 +5,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
-import random as r
-from dash.dependencies import Input, Output
-
-from app import app
 
 # Get CSV files depending on environment
 
@@ -85,15 +81,31 @@ traces.append(go.Scatter(
         size=scaled_size,
         color=scaled_colors,
         sizemode='diameter',
-        showscale=True
+        showscale=True,
+        colorbar=dict(
+            title='Nivel de inmigración',
+            titleside='top',
+            tickmode='array',
+            tickvals=[105, 180, 250],
+            ticktext=['Baja', 'Intermedia', 'Alta'],
+            ticks='outside'
+        )
     )
 ))
 
+chart_layout = go.Layout(
+    xaxis=dict(title='PIB (millones de pesos)'),
+    yaxis=dict(title='Población total')
+)
+
 layout = html.Div(className='container', children=[
 
-    html.H2(children='Población vs PIB por año, y su relación con la inmigración', style={
-        'textAlign': 'center',
-    }),
+    html.H2(
+        children='Población vs PIB por año, y su relación con la inmigración',
+        style={
+            'textAlign': 'center',
+        }
+    ),
 
     html.H4(children='(más rojo -> mayor inmigración)', style={
         'textAlign': 'center',
@@ -101,6 +113,6 @@ layout = html.Div(className='container', children=[
 
     dcc.Graph(
         id='bubble-pop-by-pib',
-        figure=go.Figure(data=traces)
+        figure=go.Figure(data=traces, layout=chart_layout)
     )
 ])

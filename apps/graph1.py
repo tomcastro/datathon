@@ -5,7 +5,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
-import random as r
 from dash.dependencies import Input, Output
 
 from app import app
@@ -80,19 +79,30 @@ df_gastos['Partida'] = df_gastos['Partida'].str.replace('Ƒ', 'E')
 CATEGORIES = df_gastos['Partida'].unique()
 YEARS_INT = df_gastos['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
-colors = ['rgb(165, 45, 22)', 'rgb(196, 208, 54)', 'rgb(151, 96, 42)', 'rgb(247, 49, 72)', 'rgb(32, 73, 157)', 'rgb(182, 230, 4)', 'rgb(151, 252, 1)', 'rgb(95, 45, 167)', 'rgb(60, 163, 219)', 'rgb(106, 13, 153)', 'rgb(121, 49, 241)', 'rgb(95, 47, 94)', 'rgb(223, 38, 81)', 'rgb(175, 112, 226)', 'rgb(242, 23, 99)', 'rgb(180, 195, 172)', 'rgb(206, 153, 212)', 'rgb(138, 181, 107)', 'rgb(116, 203, 176)', 'rgb(88, 139, 147)', 'rgb(154, 134, 48)',
-'rgb(125, 15, 36)', 'rgb(134, 151, 199)', 'rgb(23, 226, 253)', 'rgb(80, 12, 213)', 'rgb(53, 67, 175)', 'rgb(239, 5, 194)', 'rgb(155, 248, 228)', 'rgb(92, 132, 238)']
-r.shuffle(colors)
+COLORS = ['rgb(151,113,8)', 'rgb(235,172,2)', 'rgb(186,139,11)',
+          'rgb(105,77,0)', 'rgb( 62, 46,0)', 'rgb(151,82,8)',
+          'rgb(235,123,2)', 'rgb(186,102,11)', 'rgb(105,55,0)',
+          'rgb(62,32,0)', 'rgb(9,71,95)', 'rgb(7,108,147)',
+          'rgb(12,88,117)', 'rgb(3,49,66)', 'rgb(2,29,39)']
 
 colors_assigned = {}
+counter = 0
 for category in df_month['Nombre Partida'].unique():
-    colors_assigned[category] = colors.pop()
+    colors_assigned[category] = COLORS[counter]
+    counter += 1
+
+    if counter == len(COLORS) - 1:
+        counter = 0
 
 layout = html.Div(className='container', children=[
 
+    html.H2(children='Presupuesto vs. Gasto', style={
+        'textAlign': 'center',
+    }),
+
     dcc.Graph(
         id='bubble-budget-by-exp',
-        animate=True
+        # animate=True
     ),
 
     dcc.Slider(
@@ -105,9 +115,12 @@ layout = html.Div(className='container', children=[
     ),
 
     html.Div(className='graph', children=[
+
+        html.H2(id='subtitle-1', style={'textAlign': 'center'}),
+
         dcc.Graph(
             id='exp-by-month',
-            animate=True
+            # animate=True
         )
     ])
 ])
@@ -122,6 +135,24 @@ def normalize(values, bounds):
 
 
 @app.callback(
+    Output('subtitle-1', 'children'),
+    [
+        Input('year-slider', 'value'),
+        Input('bubble-budget-by-exp', 'clickData')
+    ]
+)
+def updateSubtitle(year, clickData):
+    if clickData is None:
+        category = CATEGORIES[0]
+    else:
+        category = clickData['points'][0]['text'].upper()
+
+    string = category.title() + ' - ' + str(year)
+
+    return [string]
+
+
+@app.callback(
     Output('exp-by-month', 'figure'),
     [
         Input('bubble-budget-by-exp', 'clickData'),
@@ -130,9 +161,9 @@ def normalize(values, bounds):
 )
 def updateExpChart(clickData, year):
     if clickData is None:
-        return go.Figure(data=[])
-
-    category = clickData['points'][0]['text'].upper()
+        category = CATEGORIES[0]
+    else:
+        category = clickData['points'][0]['text'].upper()
     sub_df = df_month[(df_month['Periodo'] == year)]
     sub_df = sub_df[(sub_df['Nombre Partida'] == category)]
 
@@ -142,7 +173,16 @@ def updateExpChart(clickData, year):
         go.Scatter(
             x=sub_df['Mes'],
             y=sub_df['Monto_sum'],
-            name=sub_df['Mes']
+            name=sub_df['Mes'],
+            marker=dict(
+                color=(colors_assigned[category]),
+                size=9,
+                opacity=1
+            ),
+            line=dict(
+                color=(colors_assigned[category]),
+                width=3
+            )
         )
     )
 
@@ -179,7 +219,10 @@ def updateBubbleChart(year):
         x=sub_df['Gastos'],
         y=sub_df['Presupuesto'],
         name=sub_df['Partida'],
-        text=['{}'.format(row['Partida'].title()) for i, row in sub_df.iterrows()],
+        text=[
+            '{}'.format(row['Partida'].title())
+            for i, row in sub_df.iterrows()
+        ],
         mode='markers',
         marker=dict(
             size=scaled_size,
@@ -189,4 +232,9 @@ def updateBubbleChart(year):
         )
     ))
 
-    return go.Figure(data=traces)
+    layout = go.Layout(
+        xaxis=dict(title='Gastos (millones de pesos)'),
+        yaxis=dict(title='Presupuesto (millones de pesos)'),
+    )
+
+    return go.Figure(data=traces, layout=layout)
