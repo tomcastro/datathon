@@ -104,7 +104,7 @@ chart_layout = go.Layout(
     yaxis=dict(title='Población total')
 )
 
-layout = html.Div(className='container', children=[
+layout = html.Div(className='container-fluid graph', children=[
 
     html.H2(
         children='Población vs PIB por año, y su relación con la inmigración',

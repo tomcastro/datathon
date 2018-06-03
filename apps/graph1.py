@@ -94,7 +94,7 @@ for category in df_month['Nombre Partida'].unique():
     if counter == len(COLORS) - 1:
         counter = 0
 
-layout = html.Div(className='container graph', children=[
+layout = html.Div(className='container-fluid graph', children=[
 
     html.H2(children='Presupuesto vs. Gasto', style={
         'textAlign': 'center',

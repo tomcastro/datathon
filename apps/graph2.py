@@ -58,7 +58,7 @@ df_pib = df_pib[(df_pib['Periodo']) >= 2009].sort_values(['Periodo'])
 YEARS_INT = df_pib['Periodo'].unique()
 YEARS_STR = [str(i) for i in YEARS_INT]
 
-layout = html.Div(className='container', children=[
+layout = html.Div(className='container-fluid graph', children=[
 
     html.H2(children='Presupuesto y gasto vs. PIB', style={
         'textAlign': 'center',
@@ -196,7 +196,7 @@ def updateTreemap(clickData, year):
 
     layout = dict(
         height=700,
-        width=1150,
+        width=1700,
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         shapes=shapes,
