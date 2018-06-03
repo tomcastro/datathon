@@ -8,14 +8,17 @@ def div(className, children=[]):
     return html.Div(className=className, children=children)
 
 
-def card(title, img=''):
+def card(title, link=''):
     return html.Div(
         className='card',
         children=[html.Div(
             className='card-body',
             children=[
-                html.Div(className='img-container', children=[
-                    html.Div(title, className='overlay')
+                html.Div(className='img-container ' + link[1:], children=[
+                    dcc.Link(href=link, children=[
+                        html.Div(className='floater'),
+                        html.Div(title, className='overlay')
+                    ])
                 ])
             ]
         )]
@@ -27,12 +30,12 @@ grid = html.Div(className='grid-wrapper', children=[
         [
             div(
                 'col-sm-6',
-                card('Gráfico 1', 'https://i.imgur.com/mZK8ya6.jpg')
+                card('Presupuesto vs. Gasto', '/graph1')
             ),
 
             div(
                 'col-sm-6',
-                card('Gráfico 2', 'https://i.imgur.com/mZK8ya6.jpg')
+                card('PIB vs. Presupuesto y Gasto', '/graph2')
             )
         ]
     ),
@@ -41,12 +44,12 @@ grid = html.Div(className='grid-wrapper', children=[
         [
             div(
                 'col-sm-6',
-                card('Gráfico 3', 'https://i.imgur.com/mZK8ya6.jpg')
+                card('PIB vs. Ingreso y Gasto', '/graph3')
             ),
 
             div(
                 'col-sm-6',
-                card('Gráfico 4', 'https://i.imgur.com/mZK8ya6.jpg')
+                card('Inmigración vs. PIB y población', '/graph4')
             )
         ]
     ),

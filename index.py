@@ -12,18 +12,26 @@ app.layout = html.Div([
     html.Div(children=[html.Div(
         html.Ul(
             className='custom-nav',
-                children=[
-                    html.Li(className='active', children=html.A('Cruce 1', href='/graph1')),
-                    html.Li(children=html.A('Cruce 2', href='/graph2')),
-                    html.Li(children=html.A('Cruce 3', href='/graph3')),
-                    html.Li(children=html.A('Cruce 4', href='/graph4')),
-                ]
-            )
+            children=[
+                html.Li(className='active', children=dcc.Link('DataScienceLab', href='/')),
+                html.Li(id='back', className='float-right back-button-no-display', children=[
+                    dcc.Link('Volver al inicio', href='/')
+                ])
+            ]
         )
-    ]),
+    )]),
 
     html.Div(id='page-content')
 ])
+
+
+@app.callback(Output('back', 'className'),
+              [Input('url', 'pathname')])
+def showBackButton(pathname):
+    if pathname == '/':
+        return 'float-right back-button-no-display'
+    else:
+        return 'float-right back-button-display'
 
 
 @app.callback(Output('page-content', 'children'),
@@ -41,7 +49,6 @@ def display_page(pathname):
         return index.layout
     else:
         return '404'
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
