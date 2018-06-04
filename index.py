@@ -6,6 +6,8 @@ from dash.dependencies import Input, Output
 from app import app, server
 from apps import index, graph1, graph2, graph3, graph4
 
+app.title = 'DataScienceLab UAI'
+
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
 
