@@ -100,6 +100,13 @@ layout = html.Div(className='container-fluid graph', children=[
         'textAlign': 'center',
     }),
 
+    html.Div(className='text-container', children=[
+            html.P(
+                'Las instituciones con más presupuesto y gasto en los últimos 8 años son Salud, Educación y el Tesoro Público.  Este último con una proporción lejos mayor al resto. El aparato público tiene mucho espacio para mejorar operacionalmente.  Otros ministerios podrían verse beneficiados con esta mejora como Trabajo, Obras Públicas y Vivienda, sin tener que aumentar el gasto total.',
+                className='intro-paragraph'
+            ),
+    ]),
+
     dcc.Graph(
         id='bubble-budget-by-exp',
         # animate=True

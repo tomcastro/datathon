@@ -64,6 +64,8 @@ layout = html.Div(
         ),
 
         html.Div(className='text-container', children=[
+            html.H2('A mayor presupuesto, mayor ineficiencia en gasto...', className='subtitle'),
+
             html.P(
                 'El PIB percapita ha crecido anualmente a la misma tasa del crecimiento en población e inmigrantes, teniendo un efecto positivo. Sin embargo el presupuesto y gasto del aparato público excede en varios órdenes de magnitud el de otros ministerios importantes como Salud y Educación.',
                 className='intro-paragraph'
@@ -73,10 +75,12 @@ layout = html.Div(
         html.Div(grid),
 
         html.Div(className='text-container', children=[
+            html.H2('¿Existen posibilidades de mejorar cómo se está realizando el gasto?', className='subtitle'),
             html.Ul(className='list', children=[
                 html.Li('La administración pública requiere eficiencia operacional para lograr liberar fondos que sirvan para apoyar las políticas públicas en Salud, Educación y Seguridad'),
                 html.Li('El patrón de ejecución de gasto mensual de cada institución se mantiene durante los últimos años. Aquí podría haber una mejora en agilizar la asignación de los presupuestos y acelerar su entrega para que los proyectos no sufran retrasos y los ciudadanos no se vean afectados por la demora en la ejecución de las politicas públicas del gobierno de turno.'),
-                html.Li('El crecimiento del PIB anual no se ve afectado por el crecimiento en el presupuesto y gasto anual. Las gestión económica ha sido cuidadosa de mantener en orden los ingresos y egresos del país.')
+                html.Li('El crecimiento del PIB anual no se ve afectado por el crecimiento en el presupuesto y gasto anual. Las gestión económica ha sido cuidadosa de mantener en orden los ingresos y egresos del país.'),
+                html.Li('El crecimiento de la población e inmigrantes requieren que la ejecución del gasto sea realizada de forma oportuna y eficiente sobretodo en las áreas de mayor impacto como Salud, Educación y Seguridad, por lo que debería ser un tema prioritario para el gobierno.')
             ])
         ])
     ]

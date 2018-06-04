@@ -49,6 +49,13 @@ layout = html.Div(className='container-fluid graph', children=[
         'textAlign': 'center',
     }),
 
+    html.Div(className='text-container', children=[
+            html.P(
+                'Los ingresos del país lo componen principalmente el Cobre y los Impuestos.  Sin embargo, el aporte del Cobre al ingreso anual ha ido disminuyendo cada año, desde 14% en 1990 a 2.4% en 2017 producto de las variaciones del precio del cobre en el mercado internacional, el costo operativo, y a las políticas de inversión en el país para desarrollar otras industrias de las cuales obtener ingresos por impuestos.  Esto explica el aumento en la recaudación de impuestos cada año y su impacto en la proporción del PIB.  Por esto es importante destacar que una eficiente gestión tributaria permitirá abordar los gastos futuros del país.',
+                className='intro-paragraph'
+            ),
+    ]),
+
     dcc.Graph(
         id='pie-charts',
         animate=True

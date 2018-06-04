@@ -117,6 +117,13 @@ layout = html.Div(className='container-fluid graph', children=[
         'textAlign': 'center',
     }),
 
+    html.Div(className='text-container', children=[
+            html.P(
+                'A medida que ha aumentado la problación y los inmigrantes al país, vemos un aumento también en el PIB anual.  Esto sugiere que la inmigración no tiene un efecto negativo sino que positivo en la economía y en el crecimiento del país. El gasto en Salud, Educación y Seguridad hasta ahora van en línea con el crecimiento del PIB anual y por lo tanto no se han visto afectados por la inmigración.  Es decir, la inmigración no ha generado un sobregasto en estas tres áreas principales del país.  Podríamos señalar que la inmigración ha ido creciendo gradualmente y de forma controlada en el gasto en Salud, Educación y Seguridad. Sin embargo, para mantener este crecimiento armónico, la ejecución del gasto deberá ser más eficiente ya que a mayor crecimiento de población, de inmigración y del PIB, tendremos que ser más eficientes en gastar más para cubrir las necesidades y con nuevas prioridades de un país con mayor población.',
+                className='intro-paragraph'
+            ),
+    ]),
+
     dcc.Graph(
         id='bubble-pop-by-pib',
         figure=go.Figure(data=traces, layout=chart_layout)

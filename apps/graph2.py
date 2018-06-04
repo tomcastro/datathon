@@ -64,6 +64,13 @@ layout = html.Div(className='container-fluid graph', children=[
         'textAlign': 'center',
     }),
 
+    html.Div(className='text-container', children=[
+            html.P(
+                'El presupuesto y gasto anual se ven controlados y con una baja proporción respecto al PIB anual.  Esto demuestra un orden fiscal y además que hay espacio para hacer frente a medidas de emergencia debido a catástrofes naturales.  Nuevamente aquí vemos que los principales ministerios que se llevan parte del PIB anual son Salud, Educación y el Tesoro Público.',
+                className='intro-paragraph'
+            ),
+    ]),
+
     dcc.Graph(
         id='pie-charts-2',
         animate=True
